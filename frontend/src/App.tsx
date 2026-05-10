@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, LayoutDashboard, Clock, BarChart3, X, Keyboard } from 'lucide-react';
+import { LayoutDashboard, Clock, BarChart3, X, Keyboard } from 'lucide-react';
 import type { Task } from './types';
 import TaskList from './components/TaskList';
 import TaskForm from './components/TaskForm';
@@ -12,7 +12,7 @@ type Tab = 'tasks' | 'pomodoro' | 'statistics';
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('tasks');
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | undefined>();
+  const [selectedTask] = useState<Task | undefined>();
   const [showShortcuts, setShowShortcuts] = useState(false);
 
   const handleCreateTask = () => {
