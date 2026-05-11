@@ -17,6 +17,8 @@ export default function PomodoroTimer({ selectedTask }: PomodoroTimerProps) {
   const [workDuration, setWorkDuration] = useState<number | string>(25);
   const [breakDuration, setBreakDuration] = useState<number | string>(5);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [autoStartBreak, setAutoStartBreak] = useState(false);
+  const [autoStartWork, setAutoStartWork] = useState(false);
   const [totalSessions, setTotalSessions] = useState(0);
 
   const intervalRef = useRef<number | null>(null);
@@ -26,6 +28,8 @@ export default function PomodoroTimer({ selectedTask }: PomodoroTimerProps) {
     setWorkDuration(settings.workDuration);
     setBreakDuration(settings.breakDuration);
     setSoundEnabled(settings.soundEnabled);
+    setAutoStartBreak(settings.autoStartBreak);
+    setAutoStartWork(settings.autoStartWork);
     setTimeLeft(settings.workDuration * 60);
   }, []);
 
@@ -76,14 +80,26 @@ export default function PomodoroTimer({ selectedTask }: PomodoroTimerProps) {
     }
 
     if (mode === 'work') {
-      if (confirm('工作时间结束！是否开始休息？')) {
+      if (autoStartBreak) {
         setMode('break');
         setTimeLeft(getBreakDuration() * 60);
+        setIsRunning(true);
+      } else {
+        if (confirm('工作时间结束！是否开始休息？')) {
+          setMode('break');
+          setTimeLeft(getBreakDuration() * 60);
+        }
       }
     } else {
-      if (confirm('休息时间结束！是否开始工作？')) {
+      if (autoStartWork) {
         setMode('work');
         setTimeLeft(getWorkDuration() * 60);
+        setIsRunning(true);
+      } else {
+        if (confirm('休息时间结束！是否开始工作？')) {
+          setMode('work');
+          setTimeLeft(getWorkDuration() * 60);
+        }
       }
     }
   };
@@ -131,8 +147,8 @@ export default function PomodoroTimer({ selectedTask }: PomodoroTimerProps) {
       pomodoro: {
         workDuration: getWorkDuration(),
         breakDuration: getBreakDuration(),
-        autoStartBreak: false,
-        autoStartWork: false,
+        autoStartBreak,
+        autoStartWork,
         soundEnabled,
       },
     });
@@ -228,6 +244,36 @@ export default function PomodoroTimer({ selectedTask }: PomodoroTimerProps) {
                 <span
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
                     soundEnabled ? 'left-7' : 'left-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-700">自动开始休息</span>
+              <button
+                onClick={() => setAutoStartBreak(!autoStartBreak)}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  autoStartBreak ? 'bg-primary-500' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    autoStartBreak ? 'left-7' : 'left-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-700">自动开始工作</span>
+              <button
+                onClick={() => setAutoStartWork(!autoStartWork)}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  autoStartWork ? 'bg-primary-500' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    autoStartWork ? 'left-7' : 'left-1'
                   }`}
                 />
               </button>
